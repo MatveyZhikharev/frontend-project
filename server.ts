@@ -1,4 +1,3 @@
-// server.ts
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { extname } from "https://deno.land/std@0.177.0/path/mod.ts";
 
@@ -10,13 +9,21 @@ async function handleRequest(request: Request): Promise<Response> {
   filePath = `./public${filePath}`;
 
   try {
-    const file = await Deno.readFile(filePath);
-    const contentType = getContentType(extname(filePath));
+    const file = await Deno.readTextFile(filePath);
+    const contentType = `${getContentType(extname(filePath))}; charset=utf-8`;
+    
     return new Response(file, {
-      headers: { "content-type": contentType },
+      headers: { 
+        "content-type": contentType,
+      },
     });
   } catch {
-    return new Response("Not Found", { status: 404 });
+    return new Response("Not Found", { 
+      status: 404,
+      headers: {
+        "content-type": "text/plain; charset=utf-8",
+      },
+    });
   }
 }
 
