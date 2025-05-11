@@ -30,14 +30,14 @@ const ball = {
     radius: 10,
     speedX: 5,
     speedY: -5,
-    dx: 4,
-    dy: -4,
+    launched: false,
     
     reset() {
         this.x = canvas.width / 2;
         this.y = canvas.height - 30;
         this.speedX = 5;
         this.speedY = -5;
+        this.launched = false;
     },
     
     draw() {
@@ -89,7 +89,7 @@ for (let r = 0; r < BRICK_ROW_COUNT; r++) {
     for (let c = 0; c < BRICK_COLUMN_COUNT; c++) {
         const brickX = c * (BRICK_WIDTH + BRICK_PADDING) + BRICK_OFFSET_LEFT;
         const brickY = r * (BRICK_HEIGHT + BRICK_PADDING) + BRICK_OFFSET_TOP;
-        const isRed = (r + c) % 3 === 0; // Every 3rd brick is red
+        const isRed = (r + c) % 3 === 0;
         
         bricks[r][c] = {
             x: brickX,
@@ -172,16 +172,30 @@ function formatTime(seconds) {
 
 // Event listeners
 startButton.addEventListener('click', startGame);
-canvas.addEventListener('mousemove', movePaddle);
 
-function movePaddle(e) {
+// Fixed mouse movement handler
+canvas.addEventListener('mousemove', (e) => {
     if (!gameStarted) return;
     
-    const relativeX = e.clientX - canvas.offsetLeft;
-    if (relativeX > 0 && relativeX < canvas.width) {
-        paddle.x = relativeX - paddle.width / 2;
+    // Get mouse position relative to canvas
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const mouseX = (e.clientX - rect.left) * scaleX;
+    
+    // Calculate new paddle position
+    paddle.x = Math.max(0, Math.min(mouseX - paddle.width / 2, canvas.width - paddle.width));
+    
+    // Update ball position if not launched
+    if (!ball.launched) {
+        ball.x = paddle.x + paddle.width / 2;
     }
-}
+});
+
+canvas.addEventListener('click', () => {
+    if (gameStarted && !ball.launched) {
+        ball.launched = true;
+    }
+});
 
 function startGame() {
     gameStarted = true;
@@ -262,7 +276,7 @@ function endGame() {
     startButton.style.display = 'block';
     
     if (gameWin) {
-        const endTime = (Date.now() - gameStartTime) / 1000; // in seconds
+        const endTime = (Date.now() - gameStartTime) / 1000;
         const playerName = prompt(`You won! Time: ${formatTime(endTime)}. Enter your name:`, 'Player');
         if (playerName) {
             leaderboard.addRecord(playerName, score, endTime);
@@ -288,7 +302,11 @@ function update() {
     }
     
     // Update ball position
-    ball.update();
+    if (ball.launched) {
+        ball.update();
+    } else {
+        ball.x = paddle.x + paddle.width / 2;
+    }
     
     // Paddle collision
     if (

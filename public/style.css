@@ -18,6 +18,8 @@ canvas {
     border: 2px solid #333;
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    display: block;
+    margin: 0 auto;
 }
 
 .game-info {
@@ -65,20 +67,4 @@ canvas {
 .leaderboard li {
     margin: 5px 0;
     text-align: left;
-}
-
-.game-over {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-}
-
-.hidden {
-    display: none;
 }
