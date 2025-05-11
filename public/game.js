@@ -154,7 +154,7 @@ const leaderboard = {
     
     updateUI() {
         leaderboardElement.innerHTML = `
-            <h3>Top Scores</h3>
+            <h3>Рейтинг</h3>
             <ol>
                 ${this.records.slice(0, 5).map(record => `
                     <li>${record.name}: ${record.score} (${formatTime(record.time)})</li>
@@ -277,7 +277,7 @@ function endGame() {
     
     if (gameWin) {
         const endTime = (Date.now() - gameStartTime) / 1000;
-        const playerName = prompt(`You won! Time: ${formatTime(endTime)}. Enter your name:`, 'Player');
+        const playerName = prompt(`Ты выиграл! Время: ${formatTime(endTime)}. Введите имя:`, 'Игрок');
         if (playerName) {
             leaderboard.addRecord(playerName, score, endTime);
         }
